@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Тренажёр: Н / НН в частях речи</title>
+  <style>
+    :root {
+      --purple-1: #6f42c1;
+      --purple-2: #8e63d6;
+      --purple-3: #cbb6ff;
+      --purple-4: #f2ecff;
+      --lime-1: #9be15d;
+      --lime-2: #c8f28d;
+      --lime-3: #efffd7;
+      --white: #ffffff;
+      --text: #3f315e;
+      --green-ok: #43a047;
+      --red-bad: #ef5350;
+      --shadow: 0 14px 35px rgba(86, 53, 149, 0.18);
+      --radius-xl: 28px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Trebuchet MS", "Arial Rounded MT Bold", "Comic Sans MS", Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 10% 10%, #f8f5ff 0%, #f8f5ff 20%, transparent 21%),
+        radial-gradient(circle at 90% 15%, #f2ffd8 0%, #f2ffd8 18%, transparent 19%),
+        radial-gradient(circle at 20% 85%, #efe7ff 0%, #efe7ff 16%, transparent 17%),
+        linear-gradient(135deg, #f6f1ff 0%, #f3ffe9 100%);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .decor {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .bubble {
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0.28;
+    }
+
+    .bubble.one {
+      width: 150px;
+      height: 150px;
+      background: var(--purple-3);
+      top: 30px;
+      left: 20px;
+    }
+
+    .bubble.two {
+      width: 190px;
+      height: 190px;
+      background: var(--lime-2);
+      bottom: 30px;
+      right: 20px;
+    }
+
+    .bubble.three {
+      width: 90px;
+      height: 90px;
+      background: #e1d2ff;
+      top: 180px;
+      right: 70px;
+    }
+
+    .bubble.four {
+      width: 110px;
+      height: 110px;
+      background: #dbf5b3;
+      bottom: 170px;
+      left: 50px;
+    }
+
+    .page {
+      position: relative;
+      z-index: 1;
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 24px 16px 40px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    .title-badge {
+      background: linear-gradient(135deg, var(--purple-1), var(--purple-2));
+      color: #fff;
+      border-radius: 999px;
+      padding: 14px 24px;
+      font-size: 1.15rem;
+      font-weight: 900;
+      letter-spacing: 0.3px;
+      text-align: center;
+      box-shadow: var(--shadow);
+    }
+
+    .card {
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(6px);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow);
+      border: 3px solid rgba(143, 99, 214, 0.12);
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .screen {
+      display: none;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .hero h1 {
+      margin: 0 0 12px;
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      color: var(--purple-1);
+      line-height: 1.1;
+    }
+
+    .hero p {
+      font-size: 1rem;
+      line-height: 1.6;
+      margin: 0 0 12px;
+    }
+
+    .rules {
+      background: linear-gradient(180deg, #fbf9ff, #f5fff0);
+      border: 2px dashed var(--purple-3);
+      border-radius: 22px;
+      padding: 18px;
+      margin-top: 16px;
+    }
+
+    .rules h2 {
+      margin: 0 0 10px;
+      font-size: 1.2rem;
+      color: var(--purple-1);
+    }
+
+    .rules ul {
+      margin: 0;
+      padding-left: 20px;
+      line-height: 1.55;
+    }
+
+    .start-actions {
+      margin-top: 22px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 999px;
+      padding: 14px 22px;
+      font-size: 1rem;
+      font-weight: 900;
+      cursor: pointer;
+      transition: 0.2s ease;
+      box-shadow: 0 8px 18px rgba(86, 53, 149, 0.16);
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--purple-1), var(--purple-2));
+      color: #fff;
+    }
+
+    .btn-secondary {
+      background: linear-gradient(135deg, var(--lime-1), var(--lime-2));
+      color: #2f4621;
+    }
+
+    .mascot-zone {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      min-height: 260px;
+    }
+
+    .mascot {
+      width: 130px;
+      height: 130px;
+      border-radius: 50%;
+      position: relative;
+      box-shadow: 0 16px 30px rgba(0,0,0,0.12);
+      animation: floaty 3s ease-in-out infinite;
+    }
+
+    .mascot.purple {
+      background: radial-gradient(circle at 30% 30%, #bda0ff 0%, #8c62db 55%, #6a3fbe 100%);
+      animation-delay: 0s;
+    }
+
+    .mascot.lime {
+      background: radial-gradient(circle at 30% 30%, #efffb9 0%, #b7ec69 55%, #88c94f 100%);
+      animation-delay: 0.5s;
+    }
+
+    .mascot::before,
+    .mascot::after {
+      content: "";
+      position: absolute;
+      background: #fff;
+      width: 22px;
+      height: 30px;
+      border-radius: 50%;
+      top: 36px;
+    }
+
+    .mascot::before {
+      left: 34px;
+    }
+
+    .mascot::after {
+      right: 34px;
+    }
+
+    .mascot .pupil {
+      position: absolute;
+      width: 8px;
+      height: 12px;
+      background: #2b2441;
+      border-radius: 50%;
+      top: 45px;
+      left: 42px;
+      box-shadow: 46px 0 0 #2b2441;
+    }
+
+    .mascot .smile {
+      position: absolute;
+      width: 46px;
+      height: 22px;
+      border-bottom: 4px solid #2b2441;
+      border-radius: 0 0 40px 40px;
+      left: 42px;
+      top: 74px;
+    }
+
+    .mascot .hand {
+      position: absolute;
+      width: 22px;
+      height: 22px;
+      background: inherit;
+      border-radius: 50%;
+      top: 78px;
+    }
+
+    .mascot .hand.left { left: -8px; }
+    .mascot .hand.right { right: -8px; }
+
+    @keyframes floaty {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .game-head {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .pill {
+      background: var(--purple-4);
+      border: 2px solid var(--purple-3);
+      border-radius: 999px;
+      padding: 10px 16px;
+      font-weight: 900;
+    }
+
+    .pill.score {
+      background: var(--lime-3);
+      border-color: var(--lime-2);
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 16px;
+      border-radius: 999px;
+      background: #ede6ff;
+      overflow: hidden;
+      margin-bottom: 24px;
+      border: 2px solid #d8c9ff;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--lime-1), var(--purple-2));
+      transition: width 0.3s ease;
+    }
+
+    .word-card {
+      text-align: center;
+      padding: 28px 18px;
+      border-radius: 24px;
+      background: linear-gradient(180deg, #ffffff, #faf8ff);
+      border: 3px solid #e6dbff;
+      margin-bottom: 18px;
+      min-height: 170px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      transition: 0.25s ease;
+    }
+
+    .word-card.correct {
+      background: #efffe8;
+      border-color: #8fdc7f;
+    }
+
+    .word-card.incorrect {
+      background: #fff0f0;
+      border-color: #f2a0a0;
+    }
+
+    .word-label {
+      font-size: 1rem;
+      font-weight: 800;
+      color: #7b68a5;
+      margin-bottom: 10px;
+    }
+
+    .word {
+      font-size: clamp(1.7rem, 4.8vw, 2.8rem);
+      font-weight: 900;
+      line-height: 1.25;
+      color: var(--purple-1);
+      word-break: break-word;
+    }
+
+    .insert {
+      color: #fff;
+      padding: 2px 10px;
+      border-radius: 999px;
+      display: inline-block;
+      margin: 0 2px;
+      background: #b9a4ef;
+    }
+
+    .insert.ok {
+      background: var(--green-ok);
+    }
+
+    .insert.bad {
+      background: var(--red-bad);
+    }
+
+    .feedback {
+      text-align: center;
+      min-height: 96px;
+      padding: 12px 10px;
+      font-weight: 900;
+      font-size: 1.05rem;
+    }
+
+    .feedback.correct {
+      color: var(--green-ok);
+    }
+
+    .feedback.incorrect {
+      color: var(--red-bad);
+    }
+
+    .rule-text {
+      display: inline-block;
+      margin-top: 10px;
+      font-size: 0.98rem;
+      line-height: 1.45;
+      font-weight: 800;
+      color: #5b4a7f;
+      background: #f4efff;
+      border: 2px solid #d9c7ff;
+      border-radius: 18px;
+      padding: 11px 15px;
+      max-width: 760px;
+    }
+
+    .choices {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+
+    .option-btn {
+      min-width: 140px;
+      padding: 18px 18px;
+      font-size: 1.4rem;
+      font-weight: 900;
+      border-radius: 24px;
+      border: 3px solid transparent;
+      cursor: pointer;
+      transition: 0.2s ease;
+      box-shadow: 0 10px 20px rgba(86, 53, 149, 0.15);
+    }
+
+    .option-btn:hover:not(:disabled) {
+      transform: translateY(-2px) scale(1.02);
+    }
+
+    .option-btn:disabled {
+      cursor: not-allowed;
+      opacity: 0.72;
+    }
+
+    .option-btn.n {
+      background: linear-gradient(135deg, #e8dbff, #c6aefb);
+      color: #4b2b87;
+      border-color: #b597ff;
+    }
+
+    .option-btn.nn {
+      background: linear-gradient(135deg, #efffcf, #c7ef81);
+      color: #416224;
+      border-color: #b6e16a;
+    }
+
+    .next-wrap {
+      text-align: center;
+    }
+
+    .helper-note {
+      text-align: center;
+      font-size: 0.95rem;
+      color: #7f74a1;
+      margin-top: 8px;
+    }
+
+    .result-box {
+      text-align: center;
+      padding: 10px 0 0;
+    }
+
+    .result-score {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 900;
+      color: var(--purple-1);
+      margin: 8px 0;
+    }
+
+    .result-text {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      max-width: 700px;
+      margin: 0 auto 18px;
+    }
+
+    .sticker {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--lime-1), var(--lime-2));
+      color: #324c20;
+      font-weight: 900;
+      padding: 10px 16px;
+      border-radius: 999px;
+      margin-bottom: 12px;
+      box-shadow: 0 8px 18px rgba(124, 178, 70, 0.18);
+    }
+
+    @media (max-width: 760px) {
+      .hero {
+        grid-template-columns: 1fr;
+      }
+
+      .mascot-zone {
+        min-height: auto;
+      }
+
+      .card {
+        padding: 18px;
+      }
+
+      .option-btn {
+        width: 100%;
+        max-width: 300px;
+      }
+
+      .feedback {
+        min-height: 120px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="decor">
+    <div class="bubble one"></div>
+    <div class="bubble two"></div>
+    <div class="bubble three"></div>
+    <div class="bubble four"></div>
+  </div>
+
+  <div class="page">
+    <div class="topbar">
+      <div class="title-badge">Тренажёр по русскому языку: Н / НН</div>
+    </div>
+
+    <section id="startScreen" class="screen active">
+      <div class="card">
+        <div class="hero">
+          <div>
+            <h1>Н / НН в частях речи</h1>
+            <p>
+              На экране появится слово с пропуском. Нужно выбрать: <strong>Н</strong> или <strong>НН</strong>.
+              После ответа тренажёр покажет короткое правило именно к этому слову.
+            </p>
+
+            <div class="rules">
+              <h2>Краткое правило</h2>
+              <ul>
+                <li><strong>Отымённые прилагательные:</strong> -АН-, -ЯН-, -ИН- обычно пишутся с одной Н.</li>
+                <li><strong>-ЕНН-, -ОНН-</strong> обычно пишутся с НН.</li>
+                <li><strong>Отглагольные слова:</strong> НН пишется, если есть приставка, зависимое слово, суффикс -ОВА-/-ЕВА- или совершенный вид.</li>
+                <li><strong>Краткие причастия:</strong> всегда одна Н.</li>
+                <li><strong>Краткие прилагательные и наречия:</strong> столько же Н, сколько в полной форме.</li>
+              </ul>
+            </div>
+
+            <div class="start-actions">
+              <button class="btn btn-primary" onclick="startGame()">Начать игру</button>
+            </div>
+          </div>
+
+          <div class="mascot-zone">
+            <div class="mascot purple">
+              <div class="pupil"></div>
+              <div class="smile"></div>
+              <div class="hand left"></div>
+              <div class="hand right"></div>
+            </div>
+            <div class="mascot lime">
+              <div class="pupil"></div>
+              <div class="smile"></div>
+              <div class="hand left"></div>
+              <div class="hand right"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="gameScreen" class="screen">
+      <div class="card">
+        <div class="game-head">
+          <div class="pill" id="progressText">Слово 1 из 50</div>
+          <div class="pill score" id="scoreText">Верно: 0</div>
+        </div>
+
+        <div class="progress-bar">
+          <div class="progress-bar-fill" id="progressFill"></div>
+        </div>
+
+        <div class="word-card" id="wordCard">
+          <div class="word-label">Выбери правильный вариант</div>
+          <div class="word" id="wordDisplay"></div>
+        </div>
+
+        <div class="feedback" id="feedback"></div>
+
+        <div class="choices">
+          <button class="option-btn n" id="btnN" onclick="checkAnswer('Н')">Н</button>
+          <button class="option-btn nn" id="btnNN" onclick="checkAnswer('НН')">НН</button>
+        </div>
+
+        <div class="next-wrap">
+          <button class="btn btn-secondary" id="nextBtn" onclick="nextTask()" style="display:none;">Следующее слово</button>
+        </div>
+
+        <div class="helper-note">
+          После ответа появится объяснение: почему пишется Н или НН.
+        </div>
+      </div>
+    </section>
+
+    <section id="resultScreen" class="screen">
+      <div class="card result-box">
+        <div class="sticker">Игра завершена!</div>
+        <h1 style="margin-top:0; color: var(--purple-1);">Результат</h1>
+        <div class="result-score" id="finalScore">0 / 50</div>
+        <p class="result-text" id="finalText"></p>
+        <button class="btn btn-primary" onclick="restartGame()">Играть ещё раз</button>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const tasks = [
+      {
+        masked: "деревя{?}ый дом",
+        full: "деревянный дом",
+        answer: "НН",
+        rule: "НН пишется в слове-исключении: деревянный. Обычно в суффиксе -ЯН- одна Н, но деревянный, оловянный, стеклянный — исключения."
+      },
+      {
+        masked: "лебеди{?}ая песня",
+        full: "лебединая песня",
+        answer: "Н",
+        rule: "Н пишется в суффиксе -ИН-: лебединая ← лебедь."
+      },
+      {
+        masked: "ветре{?}ый день",
+        full: "ветреный день",
+        answer: "Н",
+        rule: "Н пишется в слове-исключении ветреный. Но: безветренный — с НН."
+      },
+      {
+        masked: "безветре{?}ая погода",
+        full: "безветренная погода",
+        answer: "НН",
+        rule: "НН пишется, потому что к слову ветреный добавилась приставка без-: безветренная."
+      },
+      {
+        masked: "оловя{?}ый солдатик",
+        full: "оловянный солдатик",
+        answer: "НН",
+        rule: "НН пишется в слове-исключении: оловянный. Деревянный, оловянный, стеклянный — три исключения."
+      },
+      {
+        masked: "торжестве{?}ое событие",
+        full: "торжественное событие",
+        answer: "НН",
+        rule: "НН пишется в суффиксе -ЕНН-: торжественное."
+      },
+      {
+        masked: "серебря{?}ая ложка",
+        full: "серебряная ложка",
+        answer: "Н",
+        rule: "Н пишется в суффиксе -ЯН-: серебряная."
+      },
+      {
+        masked: "ржа{?}ой хлеб",
+        full: "ржаной хлеб",
+        answer: "Н",
+        rule: "Н пишется в суффиксе -АН-: ржаной."
+      },
+      {
+        masked: "исти{?}ая правда",
+        full: "истинная правда",
+        answer: "НН",
+        rule: "НН пишется на стыке морфем: корень истин- оканчивается на Н + суффикс -Н-."
+      },
+      {
+        masked: "карти{?}ая галерея",
+        full: "картинная галерея",
+        answer: "НН",
+        rule: "НН пишется на стыке морфем: картин- + -Н-."
+      },
+      {
+        masked: "гуси{?}ое перо",
+        full: "гусиное перо",
+        answer: "Н",
+        rule: "Н пишется в суффиксе -ИН-: гусиное."
+      },
+      {
+        masked: "вяза{?}ая кофта",
+        full: "вязаная кофта",
+        answer: "Н",
+        rule: "Н пишется в отглагольном прилагательном: нет приставки, нет зависимого слова, глагол несовершенного вида."
+      },
+      {
+        masked: "связа{?}ый свитер",
+        full: "связанный свитер",
+        answer: "НН",
+        rule: "НН пишется, потому что есть приставка С-: связанный."
+      },
+      {
+        masked: "жаре{?}ый картофель",
+        full: "жареный картофель",
+        answer: "Н",
+        rule: "Н пишется в отглагольном прилагательном: нет приставки и зависимых слов."
+      },
+      {
+        masked: "поджаре{?}ое мясо",
+        full: "поджаренное мясо",
+        answer: "НН",
+        rule: "НН пишется, потому что есть приставка ПОД-: поджаренное."
+      },
+      {
+        masked: "жаре{?}ая в масле рыба",
+        full: "жаренная в масле рыба",
+        answer: "НН",
+        rule: "НН пишется, потому что есть зависимое слово: жаренная где? в масле."
+      },
+      {
+        masked: "нежда{?}ый гость",
+        full: "нежданный гость",
+        answer: "НН",
+        rule: "НН пишется в словарном слове: нежданный. Написание нужно запомнить."
+      },
+      {
+        masked: "нечая{?}ая радость",
+        full: "нечаянная радость",
+        answer: "НН",
+        rule: "НН пишется в словарном слове: нечаянная. Написание нужно запомнить."
+      },
+      {
+        masked: "жела{?}ый подарок",
+        full: "желанный подарок",
+        answer: "НН",
+        rule: "НН пишется в словарном слове: желанный. Написание нужно запомнить."
+      },
+      {
+        masked: "невида{?}ое чудо",
+        full: "невиданное чудо",
+        answer: "НН",
+        rule: "НН пишется в словарном слове: невиданное. Написание нужно запомнить."
+      },
+      {
+        masked: "лимо{?}ый сок",
+        full: "лимонный сок",
+        answer: "НН",
+        rule: "НН пишется на стыке морфем: лимон- + -Н-."
+      },
+      {
+        masked: "ю{?}ый спортсмен",
+        full: "юный спортсмен",
+        answer: "Н",
+        rule: "Н пишется в корне слова: юный. Это не суффикс НН."
+      },
+      {
+        masked: "сви{?}ая тушёнка",
+        full: "свиная тушёнка",
+        answer: "Н",
+        rule: "Н пишется в основе слова: свиная. Это не случай НН."
+      },
+      {
+        masked: "румя{?}ые щёки",
+        full: "румяные щёки",
+        answer: "Н",
+        rule: "Н пишется в корне слова: румяные. Это не суффикс НН."
+      },
+      {
+        masked: "кова{?}ый сундук",
+        full: "кованый сундук",
+        answer: "Н",
+        rule: "Н пишется в слове-исключении: кованый. Сочетание -ОВ- здесь входит в корень, а не является суффиксом -ОВА-."
+      },
+      {
+        masked: "выкова{?}ый меч",
+        full: "выкованный меч",
+        answer: "НН",
+        rule: "НН пишется, потому что есть приставка ВЫ-: выкованный."
+      },
+      {
+        masked: "жёва{?}ая бумага",
+        full: "жёваная бумага",
+        answer: "Н",
+        rule: "Н пишется в слове-исключении: жёваная. Сочетание -ЁВ- входит в корень."
+      },
+      {
+        masked: "ране{?}ый боец",
+        full: "раненый боец",
+        answer: "Н",
+        rule: "Н пишется: раненый без приставки и без зависимых слов."
+      },
+      {
+        masked: "изране{?}ый солдат",
+        full: "израненный солдат",
+        answer: "НН",
+        rule: "НН пишется, потому что есть приставка ИЗ-: израненный."
+      },
+      {
+        masked: "медле{?}ый шаг",
+        full: "медленный шаг",
+        answer: "НН",
+        rule: "НН пишется в словарном слове: медленный. Написание нужно запомнить."
+      },
+      {
+        masked: "плетё{?}ая корзина",
+        full: "плетёная корзина",
+        answer: "Н",
+        rule: "Н пишется в отглагольном прилагательном: нет приставки и зависимых слов."
+      },
+      {
+        masked: "сплетё{?}ая из прутьев",
+        full: "сплетённая из прутьев",
+        answer: "НН",
+        rule: "НН пишется, потому что есть приставка С- и зависимое слово: сплетённая из чего? из прутьев."
+      },
+      {
+        masked: "пута{?}ый ответ",
+        full: "путаный ответ",
+        answer: "Н",
+        rule: "Н пишется в отглагольном прилагательном: нет приставки и зависимых слов."
+      },
+      {
+        masked: "неписа{?}ый закон",
+        full: "неписаный закон",
+        answer: "Н",
+        rule: "Н пишется, потому что приставка НЕ- не влияет на написание Н/НН: неписаный."
+      },
+      {
+        masked: "слома{?}ая игрушка",
+        full: "сломанная игрушка",
+        answer: "НН",
+        rule: "НН пишется, потому что есть приставка С-: сломанная."
+      },
+      {
+        masked: "асфальтирова{?}ая улица",
+        full: "асфальтированная улица",
+        answer: "НН",
+        rule: "НН пишется, потому что есть суффикс -ОВА-/-ИРОВА-: асфальтированная."
+      },
+      {
+        masked: "маринова{?}ые огурцы",
+        full: "маринованные огурцы",
+        answer: "НН",
+        rule: "НН пишется, потому что есть суффикс -ОВА-: маринованные."
+      },
+      {
+        masked: "незва{?}ый гость",
+        full: "незваный гость",
+        answer: "Н",
+        rule: "Н пишется, потому что НЕ- не считается приставкой для правила Н/НН: незваный."
+      },
+      {
+        masked: "назва{?}ый брат",
+        full: "названый брат",
+        answer: "Н",
+        rule: "Н пишется в устойчивом выражении: названый брат. Но: названный в честь деда — с НН."
+      },
+      {
+        masked: "посажё{?}ый отец",
+        full: "посажёный отец",
+        answer: "Н",
+        rule: "Н пишется в устойчивом выражении: посажёный отец. Написание нужно запомнить."
+      },
+      {
+        masked: "прида{?}ое невесты",
+        full: "приданое невесты",
+        answer: "Н",
+        rule: "Н пишется в существительном: приданое. Это словарное слово."
+      },
+      {
+        masked: "труже{?}ик",
+        full: "труженик",
+        answer: "Н",
+        rule: "Н пишется в словарном слове: труженик."
+      },
+      {
+        masked: "племя{?}ик",
+        full: "племянник",
+        answer: "НН",
+        rule: "НН пишется на стыке морфем: племян- + -Н-."
+      },
+      {
+        masked: "гости{?}ица",
+        full: "гостиница",
+        answer: "Н",
+        rule: "Н пишется в слове гостиница. Это словарное написание."
+      },
+      {
+        masked: "говорить искре{?}е",
+        full: "говорить искренне",
+        answer: "НН",
+        rule: "НН пишется в наречии, потому что оно образовано от прилагательного искренний, где НН."
+      },
+      {
+        masked: "поступить обдума{?}о",
+        full: "поступить обдуманно",
+        answer: "НН",
+        rule: "НН пишется в наречии, потому что оно образовано от прилагательного обдуманный, где НН."
+      },
+      {
+        masked: "смотреть рассея{?}о",
+        full: "смотреть рассеянно",
+        answer: "НН",
+        rule: "НН пишется в наречии, потому что оно образовано от прилагательного рассеянный, где НН."
+      },
+      {
+        masked: "задача реше{?}а",
+        full: "задача решена",
+        answer: "Н",
+        rule: "В кратком причастии пишется одна Н: задача решена."
+      },
+      {
+        masked: "вещи разброса{?}ы",
+        full: "вещи разбросаны",
+        answer: "Н",
+        rule: "В кратком причастии пишется одна Н: вещи разбросаны."
+      },
+      {
+        masked: "девочка умна и воспита{?}а",
+        full: "девочка умна и воспитанна",
+        answer: "НН",
+        rule: "В кратком прилагательном пишется столько же Н, сколько в полной форме: воспитанная — воспитанна."
+      }
+    ];
+
+    let currentIndex = 0;
+    let score = 0;
+    let answered = false;
+    let gameTasks = [];
+
+    const startScreen = document.getElementById("startScreen");
+    const gameScreen = document.getElementById("gameScreen");
+    const resultScreen = document.getElementById("resultScreen");
+
+    const progressText = document.getElementById("progressText");
+    const scoreText = document.getElementById("scoreText");
+    const progressFill = document.getElementById("progressFill");
+    const wordDisplay = document.getElementById("wordDisplay");
+    const feedback = document.getElementById("feedback");
+    const nextBtn = document.getElementById("nextBtn");
+    const btnN = document.getElementById("btnN");
+    const btnNN = document.getElementById("btnNN");
+    const wordCard = document.getElementById("wordCard");
+
+    const finalScore = document.getElementById("finalScore");
+    const finalText = document.getElementById("finalText");
+
+    function shuffleArray(arr) {
+      const copy = [...arr];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function startGame() {
+      currentIndex = 0;
+      score = 0;
+      answered = false;
+      gameTasks = shuffleArray(tasks);
+
+      startScreen.classList.remove("active");
+      resultScreen.classList.remove("active");
+      gameScreen.classList.add("active");
+
+      renderTask();
+    }
+
+    function restartGame() {
+      startGame();
+    }
+
+    function renderTask() {
+      answered = false;
+      const currentTask = gameTasks[currentIndex];
+
+      progressText.textContent = `Слово ${currentIndex + 1} из ${gameTasks.length}`;
+      scoreText.textContent = `Верно: ${score}`;
+      progressFill.style.width = `${(currentIndex / gameTasks.length) * 100}%`;
+
+      wordCard.classList.remove("correct", "incorrect");
+      feedback.textContent = "";
+      feedback.className = "feedback";
+      nextBtn.style.display = "none";
+
+      btnN.disabled = false;
+      btnNN.disabled = false;
+
+      wordDisplay.innerHTML = renderMasked(currentTask.masked, "...");
+    }
+
+    function renderMasked(masked, insertText, mode = "") {
+      const insertClass = mode ? `insert ${mode}` : "insert";
+      return masked.replace("{?}", `<span class="${insertClass}">${insertText}</span>`);
+    }
+
+    function checkAnswer(choice) {
+      if (answered) return;
+
+      answered = true;
+      const currentTask = gameTasks[currentIndex];
+      const isCorrect = choice === currentTask.answer;
+
+      btnN.disabled = true;
+      btnNN.disabled = true;
+      nextBtn.style.display = "inline-block";
+
+      wordDisplay.innerHTML = renderMasked(currentTask.masked, currentTask.answer, isCorrect ? "ok" : "bad");
+
+      if (isCorrect) {
+        score++;
+        scoreText.textContent = `Верно: ${score}`;
+        wordCard.classList.add("correct");
+        feedback.classList.add("correct");
+        feedback.innerHTML = `
+          Правильно ✅<br>
+          <span class="rule-text">${currentTask.rule}</span>
+        `;
+      } else {
+        wordCard.classList.add("incorrect");
+        feedback.classList.add("incorrect");
+        feedback.innerHTML = `
+          Допущена ошибка ❌<br>
+          Правильно: <strong>${currentTask.full}</strong><br>
+          <span class="rule-text">${currentTask.rule}</span>
+        `;
+      }
+
+      if (currentIndex === gameTasks.length - 1) {
+        nextBtn.textContent = "Показать результат";
+      } else {
+        nextBtn.textContent = "Следующее слово";
+      }
+    }
+
+    function nextTask() {
+      if (currentIndex < gameTasks.length - 1) {
+        currentIndex++;
+        renderTask();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+      gameScreen.classList.remove("active");
+      resultScreen.classList.add("active");
+
+      progressFill.style.width = "100%";
+      finalScore.textContent = `${score} / ${gameTasks.length}`;
+
+      const percent = Math.round((score / gameTasks.length) * 100);
+
+      let message = "";
+      if (percent === 100) {
+        message = "Идеально! Тема Н/НН освоена на уровне «я теперь сам объясню соседу по парте» 👏";
+      } else if (percent >= 85) {
+        message = "Очень сильный результат! Осталось добить несколько вредных исключений 🔥";
+      } else if (percent >= 65) {
+        message = "Хорошо! Основа есть, но сложные случаи ещё требуют тренировки 🙂";
+      } else if (percent >= 40) {
+        message = "Пока средне. Правило нужно повторить и пройти тренажёр ещё раз 💪";
+      } else {
+        message = "Н/НН пока делает вид, что оно сложнее, чем есть на самом деле. Повтори правило и попробуй снова 🌟";
+      }
+
+      finalText.textContent = `Правильных ответов: ${score} из ${gameTasks.length} (${percent}%). ${message}`;
+    }
+  </script>
+</body>
+</html>
